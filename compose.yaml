@@ -1,0 +1,65 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: moviemonster-db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-appuser}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change_me}
+      POSTGRES_DB: ${POSTGRES_DB:-moviemonster}
+    ports:
+      - "5432:5432"
+    volumes:
+      - moviemonster_postgres_data:/var/lib/postgresql/data
+    networks:
+      - moviemonster-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  backend:
+    build:
+      context: ../MovieMonsterBackend
+    image: jbaldwin215/movie-monster-backend:latest
+    container_name: moviemonster-backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+      LOCAL_JDBC_DATABASE_URL: ${LOCAL_JDBC_DATABASE_URL:-jdbc:postgresql://postgres:5432/moviemonster}
+      LOCAL_JDBC_DATABASE_USERNAME: ${LOCAL_JDBC_DATABASE_USERNAME:-appuser}
+      LOCAL_JDBC_DATABASE_PASSWORD: ${LOCAL_JDBC_DATABASE_PASSWORD:-change_me}
+      LOCAL_JWT_SECRET: ${LOCAL_JWT_SECRET:-local-dev-jwt-secret-change-me}
+      LOCAL_TMDB_KEY: ${LOCAL_TMDB_KEY:-}
+      LOCAL_S3_ACCESS_KEY: ${LOCAL_S3_ACCESS_KEY:-local-access-key}
+      LOCAL_S3_SECRET_KEY: ${LOCAL_S3_SECRET_KEY:-local-secret-key}
+      LOCAL_S3_BUCKET_NAME: ${LOCAL_S3_BUCKET_NAME:-local-dev-bucket}
+      LOCAL_APP_CORS_ALLOWED_ORIGINS: ${LOCAL_APP_CORS_ALLOWED_ORIGINS:-http://localhost:5000}
+    ports:
+      - "8080:8080"
+    networks:
+      - moviemonster-net
+
+  frontend:
+    build:
+      context: ../MovieMonsterFrontend
+      args:
+        REACT_APP_API_ORIGIN: ${FRONTEND_API_ORIGIN:-http://localhost:8080}
+    image: jbaldwin215/movie-monster-frontend:latest
+    container_name: moviemonster-frontend
+    depends_on:
+      - backend
+    ports:
+      - "5000:5000"
+    networks:
+      - moviemonster-net
+
+networks:
+  moviemonster-net:
+    name: moviemonster-net
+
+volumes:
+  moviemonster_postgres_data:
