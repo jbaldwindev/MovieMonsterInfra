@@ -22,7 +22,7 @@ services:
   backend:
     build:
       context: ../MovieMonsterBackend
-    image: jbaldwin215/movie-monster-backend:latest
+    image: jbaldwin215/moviemonster-backend:latest
     container_name: moviemonster-backend
     depends_on:
       postgres:
@@ -48,7 +48,7 @@ services:
       context: ../MovieMonsterFrontend
       args:
         REACT_APP_API_ORIGIN: ${FRONTEND_API_ORIGIN:-http://localhost:8080}
-    image: jbaldwin215/movie-monster-frontend:latest
+    image: jbaldwin215/moviemonster-frontend:latest
     container_name: moviemonster-frontend
     depends_on:
       - backend
