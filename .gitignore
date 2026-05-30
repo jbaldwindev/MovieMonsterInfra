@@ -1,0 +1,5 @@
+# Local environment files contain credentials.
+.env
+backend/backend.env
+frontend/frontend.env
+postgres/db.env

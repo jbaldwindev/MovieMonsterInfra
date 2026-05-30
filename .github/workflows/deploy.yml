@@ -1,0 +1,51 @@
+name: Reusable Deploy
+
+on:
+  workflow_call:
+    inputs:
+      environment_name:
+        description: GitHub environment to deploy
+        required: true
+        type: string
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy ${{ inputs.environment_name }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: ${{ inputs.environment_name }}
+    concurrency:
+      group: deploy-${{ inputs.environment_name }}
+      cancel-in-progress: false
+
+    steps:
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1.2.5
+        env:
+          DEPLOY_PATH: ${{ vars.DEPLOY_PATH }}
+        with:
+          host: ${{ vars.SSH_HOST }}
+          port: ${{ vars.SSH_PORT || 22 }}
+          username: ${{ vars.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          fingerprint: ${{ vars.SSH_HOST_FINGERPRINT }}
+          envs: DEPLOY_PATH
+          command_timeout: 10m
+          script: |
+            set -euo pipefail
+
+            if [ -z "${DEPLOY_PATH:-}" ] || [ "${DEPLOY_PATH}" = "/" ]; then
+              echo "DEPLOY_PATH must point to a deployment directory."
+              exit 1
+            fi
+
+            cd -- "${DEPLOY_PATH}"
+
+            docker compose config --quiet
+            docker compose pull
+            docker compose up -d --remove-orphans --wait --wait-timeout 120
+            docker compose ps
+
+            docker image prune -f
