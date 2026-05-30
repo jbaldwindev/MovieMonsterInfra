@@ -20,15 +20,13 @@ services:
       start_period: 10s
 
   backend:
-    build:
-      context: ../MovieMonsterBackend
     image: jbaldwin215/moviemonster-backend:latest
     container_name: moviemonster-backend
     depends_on:
       postgres:
         condition: service_healthy
     environment:
-      SPRING_PROFILES_ACTIVE: local
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-local}
       LOCAL_JDBC_DATABASE_URL: ${LOCAL_JDBC_DATABASE_URL:-jdbc:postgresql://postgres:5432/moviemonster}
       LOCAL_JDBC_DATABASE_USERNAME: ${LOCAL_JDBC_DATABASE_USERNAME:-appuser}
       LOCAL_JDBC_DATABASE_PASSWORD: ${LOCAL_JDBC_DATABASE_PASSWORD:-change_me}
