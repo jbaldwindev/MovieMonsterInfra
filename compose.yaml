@@ -45,7 +45,7 @@ services:
     build:
       context: ../MovieMonsterFrontend
       args:
-        REACT_APP_API_ORIGIN: ${FRONTEND_API_ORIGIN:-http://localhost:8080}
+        REACT_APP_API_ORIGIN: ${FRONTEND_API_ORIGIN:-}
     image: jbaldwin215/moviemonster-frontend:latest
     container_name: moviemonster-frontend
     depends_on:
