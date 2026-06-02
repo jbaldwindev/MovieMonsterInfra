@@ -11,3 +11,4 @@ jobs:
     uses: ./.github/workflows/deploy.yml
     with:
       environment_name: production
+      runner_label: production
