@@ -51,6 +51,15 @@ jobs:
 
           cd -- "${DEPLOY_PATH}"
 
+          echo "Current directory:"
+          pwd
+          echo "Current user:"
+          whoami
+          echo "Identity:"
+          id
+          echo "Directory contents:"
+          ls -la
+          
           cat > .env <<EOF
           LOCAL_JDBC_DATABASE_PASSWORD=${LOCAL_JDBC_DATABASE_PASSWORD}
           LOCAL_JWT_SECRET=${LOCAL_JWT_SECRET}
