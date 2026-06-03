@@ -27,6 +27,24 @@ jobs:
       - name: Deploy locally
         env:
           DEPLOY_PATH: ${{ vars.DEPLOY_PATH }}
+          LOCAL_JDBC_DATABASE_PASSWORD: ${{ secrets.LOCAL_JDBC_DATABASE_PASSWORD }}
+          LOCAL_JWT_SECRET: ${{ secrets.LOCAL_JWT_SECRET }}
+          LOCAL_S3_ACCESS_KEY: ${{ secrets.LOCAL_S3_ACCESS_KEY }}
+          LOCAL_S3_SECRET_KEY: ${{ secrets.LOCAL_S3_SECRET_KEY }}
+          LOCAL_TMDB_KEY: ${{ secrets.LOCAL_TMDB_KEY }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          SSH_HOST_FINGERPRINT: ${{ secrets.SSH_HOST_FINGERPRINT }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          FRONTEND_API_ORIGIN: ${{ vars.FRONTEND_API_ORIGIN }}
+          LOCAL_APP_CORS_ALLOWED_ORIGINS: ${{ vars.LOCAL_APP_CORS_ALLOWED_ORIGINS }}
+          LOCAL_JDBC_DATABASE_URL: ${{ vars.LOCAL_JDBC_DATABASE_URL }}
+          LOCAL_JDBC_DATABASE_USERNAME: ${{ vars. LOCAL_JDBC_DATABASE_USERNAME }}
+          LOCAL_S3_BUCKET_NAME: ${{ vars.LOCAL_S3_BUCKET_NAME }}
+          POSTGRES_DB: ${{ vars.POSTGRES_DB }}
+          POSTGRES_USER: ${{ vars.POSTGRES_USER }}
+          SPRING_PROFILES_ACTIVE: ${{ vars.SPRING_PROFILES_ACTIVE }}
+          SSH_HOST: ${{ vars.SSH_HOST }}
+          SSH_USER: ${{ vars.SSH_USER }}
         run: |
           set -euo pipefail
 
@@ -37,6 +55,27 @@ jobs:
 
           cd -- "${DEPLOY_PATH}"
 
+          cat > .env <<EOF
+          LOCAL_JDBC_DATABASE_PASSWORD=${LOCAL_JDBC_DATABASE_PASSWORD}
+          LOCAL_JWT_SECRET=${LOCAL_JWT_SECRET}
+          LOCAL_S3_ACCESS_KEY=${LOCAL_S3_ACCESS_KEY}
+          LOCAL_S3_SECRET_KEY=${LOCAL_S3_SECRET_KEY}
+          LOCAL_TMDB_KEY=${LOCAL_TMDB_KEY}
+          POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+          SSH_HOST_FINGERPRINT=${SSH_HOST_FINGERPRINT}
+          SSH_PRIVATE_KEY=${SSH_PRIVATE_KEY}
+          FRONTEND_API_ORIGIN=${FRONTEND_API_ORIGIN}
+          LOCAL_APP_CORS_ALLOWED_ORIGINS=${LOCAL_APP_CORS_ALLOWED_ORIGINS}
+          LOCAL_JDBC_DATABASE_URL=${LOCAL_JDBC_DATABASE_URL}
+          LOCAL_JDBC_DATABASE_USERNAME=${LOCAL_JDBC_DATABASE_USERNAME}
+          LOCAL_S3_BUCKET_NAME=${LOCAL_S3_BUCKET_NAME}
+          POSTGRES_DB=${POSTGRES_DB}
+          POSTGRES_USER=${POSTGRES_USER}
+          SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
+          SSH_HOST=${SSH_HOST}
+          SSH_USER=${SSH_USER}
+          EOF
+          
           docker compose config --quiet
           docker compose pull
           docker compose up -d --remove-orphans --wait --wait-timeout 120
