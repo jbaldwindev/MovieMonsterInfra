@@ -15,7 +15,7 @@ production deployments.
 | `frontend` | Frontend image built from `../MovieMonsterFrontend` and tagged as `jbaldwin215/moviemonster-frontend:latest` | `5000` |
 
 All services run on the shared `moviemonster-net` Docker network. Database data
-is stored in the `moviemonster_postgres_data` volume.
+is stored in the `moviemonster_postgres_data` volume - soon going to migrate to a PostgreSQL VM, with backups.
 
 ## Repository Layout
 
@@ -154,8 +154,6 @@ settings.
 - PostgreSQL readiness is checked with `pg_isready` before the backend starts.
 - The backend uses the Compose service name `postgres` for local database
   connectivity.
-- The frontend build context is outside this repository, so local frontend builds
-  require the sibling `MovieMonsterFrontend` repository.
 - The frontend service has both an image tag and a build context. Deployment
   hosts should either have access to a published frontend image or have the
   sibling `MovieMonsterFrontend` build context available.
