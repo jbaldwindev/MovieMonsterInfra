@@ -24,6 +24,7 @@ jobs:
       cancel-in-progress: false
 
     steps:
+      - uses: actions/checkout@v4
       - name: Deploy locally
         env:
           DEPLOY_PATH: ${{ vars.DEPLOY_PATH }}
